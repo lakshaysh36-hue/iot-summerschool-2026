@@ -67,3 +67,13 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+# Arduino IDE
+*.ino~
+*.elf
+*.hex
+
+# Arduino CLI cache
+.arduino/
+
+# VS Code (if using PlatformIO or Arduino extension)
+.vscode/
