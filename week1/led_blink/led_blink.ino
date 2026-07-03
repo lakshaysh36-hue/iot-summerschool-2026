@@ -5,24 +5,31 @@ Description:
 LED blink program with serial monitoring and potentiometer-controlled blink speed.
 */
 
+const int ledPin = 13;
+const int potPin = A0;
+
 int blinkCount = 0;
 
 void setup() {
-  pinMode(13, OUTPUT);
+  pinMode(ledPin, OUTPUT);
   Serial.begin(9600);
 }
 
 void loop() {
-  int sensorValue = analogRead(A0);
+  int sensorValue = analogRead(potPin);
   int delayTime = map(sensorValue, 0, 1023, 100, 1000);
 
-  digitalWrite(13, HIGH);
+  digitalWrite(ledPin, HIGH);
   delay(delayTime);
 
-  digitalWrite(13, LOW);
+  digitalWrite(ledPin, LOW);
   delay(delayTime);
 
   blinkCount++;
+
   Serial.print("Blink count: ");
-  Serial.println(blinkCount);
+  Serial.print(blinkCount);
+  Serial.print(" | Delay: ");
+  Serial.print(delayTime);
+  Serial.println(" ms");
 }
