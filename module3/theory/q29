@@ -1,0 +1,32 @@
+
+
+
+
+**Sensor calibration** is the process of comparing a sensor's readings with known reference values and adjusting its output so that it provides accurate measurements. Calibration helps reduce errors caused by manufacturing variations, environmental conditions, aging, or sensor drift.
+
+
+Calibration is important because IoT systems rely on accurate sensor data to make decisions. Incorrect sensor readings can lead to poor performance, wrong automation actions, and unreliable monitoring. Proper calibration improves measurement accuracy, system reliability, and overall efficiency.
+
+### Calibrating an Analog Soil Moisture Sensor
+
+To calibrate an analog soil moisture sensor, first determine the sensor values under two known conditions:
+
+* **Dry Soil:** Insert the sensor into completely dry soil and record the analog value (or measure it in air if specified by the manufacturer). This represents the **0% moisture** reference.
+* **Wet Soil:** Insert the sensor into fully saturated soil (or water, depending on the calibration procedure) and record the analog value. This represents the **100% moisture** reference.
+
+These two values are then used to convert any sensor reading into a moisture percentage.
+
+### Two-Point Calibration Method
+
+The **two-point calibration method** uses two reference points with known values:
+
+1. Measure and record the sensor reading for the **0% reference (dry soil)**.
+2. Measure and record the sensor reading for the **100% reference (wet soil)**.
+3. Use these two values to map all intermediate readings to a percentage scale from **0% to 100%**.
+
+For example:
+
+* Dry soil reading = **850** → **0%**
+* Wet soil reading = **350** → **100%**
+
+Any reading between **350** and **850** can be converted to a moisture percentage using the Arduino `map()` function or a similar mathematical formula. This ensures that the soil moisture readings accurately represent the actual moisture level.
