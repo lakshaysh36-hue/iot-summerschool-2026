@@ -1,33 +1,61 @@
 /*
-Project: Digital Piano
-Author: Lakshay Sharma
+---------------------------------------------------------
+Project : Digital Piano using Passive Buzzer
+Author  : Lakshay Sharma
+
 Description:
-Four-note piano with Sol chord substitute.
+4-key digital piano with:
+- Major/Minor mode
+- Sol chord substitute
+- Button release silence
+---------------------------------------------------------
 */
 
 const int buzzerPin = 8;
 
-const int doButton = 2;
-const int reButton = 3;
-const int miButton = 4;
-const int faButton = 5;
+const int buttonDo = 2;
+const int buttonRe = 3;
+const int buttonMi = 4;
+const int buttonFa = 5;
+
+const int modeButton = 6;
+
+int majorScale[4] = {262, 294, 330, 349};
+int minorScale[4] = {262, 294, 311, 349};
+
+bool majorMode = true;
+bool lastModeState = HIGH;
 
 void setup()
 {
-    pinMode(doButton, INPUT_PULLUP);
-    pinMode(reButton, INPUT_PULLUP);
-    pinMode(miButton, INPUT_PULLUP);
-    pinMode(faButton, INPUT_PULLUP);
+    pinMode(buttonDo, INPUT_PULLUP);
+    pinMode(buttonRe, INPUT_PULLUP);
+    pinMode(buttonMi, INPUT_PULLUP);
+    pinMode(buttonFa, INPUT_PULLUP);
+
+    pinMode(modeButton, INPUT_PULLUP);
 
     pinMode(buzzerPin, OUTPUT);
+
+    Serial.begin(9600);
 }
 
 void loop()
 {
-    bool doPressed = digitalRead(doButton) == LOW;
-    bool rePressed = digitalRead(reButton) == LOW;
-    bool miPressed = digitalRead(miButton) == LOW;
-    bool faPressed = digitalRead(faButton) == LOW;
+    bool currentModeState = digitalRead(modeButton);
+
+    if (lastModeState == HIGH && currentModeState == LOW)
+    {
+        majorMode = !majorMode;
+        delay(250);
+    }
+
+    lastModeState = currentModeState;
+
+    bool doPressed = digitalRead(buttonDo) == LOW;
+    bool rePressed = digitalRead(buttonRe) == LOW;
+    bool miPressed = digitalRead(buttonMi) == LOW;
+    bool faPressed = digitalRead(buttonFa) == LOW;
 
     int pressed = doPressed + rePressed + miPressed + faPressed;
 
@@ -37,27 +65,22 @@ void loop()
     }
     else if (doPressed)
     {
-        tone(buzzerPin, 262);
+        tone(buzzerPin, majorMode ? majorScale[0] : minorScale[0]);
     }
     else if (rePressed)
     {
-        tone(buzzerPin, 294);
+        tone(buzzerPin, majorMode ? majorScale[1] : minorScale[1]);
     }
     else if (miPressed)
     {
-        tone(buzzerPin, 330);
+        tone(buzzerPin, majorMode ? majorScale[2] : minorScale[2]);
     }
     else if (faPressed)
     {
-        tone(buzzerPin, 349);
+        tone(buzzerPin, majorMode ? majorScale[3] : minorScale[3]);
     }
     else
     {
         noTone(buzzerPin);
     }
 }
-
-
-
-
-
