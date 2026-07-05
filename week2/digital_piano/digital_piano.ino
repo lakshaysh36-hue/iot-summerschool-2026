@@ -2,7 +2,7 @@
 Project: Digital Piano
 Author: Lakshay Sharma
 Description:
-Basic digital piano with four notes.
+Four-note piano with buzzer stop on button release.
 */
 
 const int buzzerPin = 8;
@@ -25,19 +25,17 @@ void setup()
 void loop()
 {
     if (digitalRead(doButton) == LOW)
-    {
         tone(buzzerPin, 262);
-    }
+
     else if (digitalRead(reButton) == LOW)
-    {
         tone(buzzerPin, 294);
-    }
+
     else if (digitalRead(miButton) == LOW)
-    {
         tone(buzzerPin, 330);
-    }
+
     else if (digitalRead(faButton) == LOW)
-    {
         tone(buzzerPin, 349);
-    }
+
+    else
+        noTone(buzzerPin);
 }
