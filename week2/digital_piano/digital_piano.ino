@@ -84,3 +84,26 @@ void loop()
         noTone(buzzerPin);
     }
 }
+//connections
+//passive buzzer(+)-D8, passive buzzer(-) - GND 
+//button1(Do)-D2  button2(Re)-D3  button3(Mi)-D4  Button4(Fa)-D5 mODE BUTTON-D6 other side of every button-GND
+//The code uses INPUT_PULLUP, so no external pull-up resistors are required.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
