@@ -2,7 +2,7 @@
 Project: Digital Piano
 Author: Lakshay Sharma
 Description:
-Four-note piano with buzzer stop on button release.
+Four-note piano with Sol chord substitute.
 */
 
 const int buzzerPin = 8;
@@ -24,18 +24,40 @@ void setup()
 
 void loop()
 {
-    if (digitalRead(doButton) == LOW)
+    bool doPressed = digitalRead(doButton) == LOW;
+    bool rePressed = digitalRead(reButton) == LOW;
+    bool miPressed = digitalRead(miButton) == LOW;
+    bool faPressed = digitalRead(faButton) == LOW;
+
+    int pressed = doPressed + rePressed + miPressed + faPressed;
+
+    if (pressed >= 2)
+    {
+        tone(buzzerPin, 392);
+    }
+    else if (doPressed)
+    {
         tone(buzzerPin, 262);
-
-    else if (digitalRead(reButton) == LOW)
+    }
+    else if (rePressed)
+    {
         tone(buzzerPin, 294);
-
-    else if (digitalRead(miButton) == LOW)
+    }
+    else if (miPressed)
+    {
         tone(buzzerPin, 330);
-
-    else if (digitalRead(faButton) == LOW)
+    }
+    else if (faPressed)
+    {
         tone(buzzerPin, 349);
-
+    }
     else
+    {
         noTone(buzzerPin);
+    }
 }
+
+
+
+
+
