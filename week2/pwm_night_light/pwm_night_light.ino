@@ -176,3 +176,20 @@ void sosPattern()
 
     delay(1000);
 }
+
+/*PWM Night Light Started
+Mode 1 : Slow Breathing
+
+Current Mode : Fast Pulse
+
+Current Mode : SOS Pattern
+
+Current Mode : Slow Breathing
+*/
+
+
+
+
+
+
+
