@@ -1,0 +1,139 @@
+=== SENSOR LOG ===
+Time      : 0 ms
+Temp      : 28.5 C | Humidity: 65%
+Light     : 73% (Bright)
+Distance  : 42 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 5000 ms
+Temp      : 28.7 C | Humidity: 64%
+Light     : 71% (Bright)
+Distance  : 40 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 10000 ms
+Temp      : 29.0 C | Humidity: 66%
+Light     : 69% (Normal)
+Distance  : 38 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 15000 ms
+Temp      : 29.2 C | Humidity: 67%
+Light     : 68% (Normal)
+Distance  : 36 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 20000 ms
+Temp      : 29.4 C | Humidity: 68%
+Light     : 66% (Normal)
+Distance  : 35 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 25000 ms
+Temp      : 29.6 C | Humidity: 67%
+Light     : 64% (Normal)
+Distance  : 33 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 30000 ms
+Temp      : 29.8 C | Humidity: 69%
+Light     : 62% (Normal)
+Distance  : 31 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 35000 ms
+Temp      : 30.1 C | Humidity: 70%
+Light     : 60% (Normal)
+Distance  : 30 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 40000 ms
+Temp      : 30.3 C | Humidity: 71%
+Light     : 58% (Normal)
+Distance  : 28 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 45000 ms
+Temp      : 30.5 C | Humidity: 70%
+Light     : 56% (Normal)
+Distance  : 27 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 50000 ms
+Temp      : 30.8 C | Humidity: 72%
+Light     : 54% (Normal)
+Distance  : 25 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 55000 ms
+Temp      : 31.0 C | Humidity: 73%
+Light     : 52% (Normal)
+Distance  : 24 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 60000 ms
+Temp      : 31.2 C | Humidity: 74%
+Light     : 50% (Normal)
+Distance  : 22 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 65000 ms
+Temp      : 31.4 C | Humidity: 75%
+Light     : 48% (Normal)
+Distance  : 20 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 70000 ms
+Temp      : 31.6 C | Humidity: 74%
+Light     : 46% (Normal)
+Distance  : 18 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 75000 ms
+Temp      : 31.8 C | Humidity: 73%
+Light     : 44% (Normal)
+Distance  : 16 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 80000 ms
+Temp      : 32.0 C | Humidity: 72%
+Light     : 42% (Normal)
+Distance  : 15 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 85000 ms
+Temp      : 32.2 C | Humidity: 71%
+Light     : 40% (Normal)
+Distance  : 14 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 90000 ms
+Temp      : 32.4 C | Humidity: 70%
+Light     : 38% (Dark)
+Distance  : 12 cm
+==================
+
+=== SENSOR LOG ===
+Time      : 95000 ms
+Temp      : 32.6 C | Humidity: 69%
+Light     : 35% (Dark)
+Distance  : 10 cm
+==================
