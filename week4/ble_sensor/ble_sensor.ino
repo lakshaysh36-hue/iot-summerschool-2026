@@ -1,4 +1,20 @@
-#include <BLEDevice.h>
+
+ /*
+  Project: ESP32 BLE Temperature and Humidity Sensor
+
+  Description:
+  This project uses an ESP32 and a DHT11 sensor to measure
+  temperature and humidity. The ESP32 acts as a Bluetooth Low
+  Energy (BLE) server, advertising a custom BLE service with
+  three characteristics: temperature, humidity, and timestamp.
+  Sensor readings are updated every 3 seconds, sent as BLE
+  notifications to connected devices, and displayed on the
+  Serial Monitor.
+
+  Author: Lakshay Sharma
+  Date: 17 July 2026
+*/
+author date description #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
