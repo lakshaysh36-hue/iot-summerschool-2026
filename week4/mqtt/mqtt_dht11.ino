@@ -5,7 +5,22 @@
 #define DHTPIN 4
 #define DHTTYPE DHT11
 #define LED_PIN 2
+/*
+  Project: ESP32 MQTT Temperature, Humidity, and LED Control
 
+  Description:
+  This project uses an ESP32, DHT11 temperature and humidity sensor,
+  and the MQTT protocol to enable IoT-based monitoring and control.
+  The ESP32 connects to a Wi-Fi network and an MQTT broker, publishes
+  temperature and humidity readings in JSON format every 5 seconds,
+  and subscribes to an LED control topic. When "ON" or "OFF" messages
+  are received, the onboard LED is switched accordingly. Sensor data,
+  MQTT connection status, and publish results are displayed on the
+  Serial Monitor for debugging and monitoring.
+
+  Author: Lakshay Sharma
+  Date: 17 July 2026
+*/
 const char* ssid = "wifi name";
 const char* password = "wifi password";
 
