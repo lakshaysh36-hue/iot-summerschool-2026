@@ -1,7 +1,20 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <DHT.h>
+/*
+  Project: ESP32 Wi-Fi Weather Monitoring Web Server
 
+  Description:
+  This project uses an ESP32 and a DHT11 temperature and humidity
+  sensor to create a simple Wi-Fi web server. The ESP32 connects to
+  a local Wi-Fi network and hosts a webpage displaying real-time
+  temperature, humidity, and system uptime. The webpage refreshes
+  automatically every 10 seconds and includes a button to remotely
+  toggle the onboard LED through a web browser.
+
+  Author: Lakshay Sharma
+  Date: 17 July 2026
+*/
 #define DHTPIN 4
 #define DHTTYPE DHT11
 #define LED_PIN 2
