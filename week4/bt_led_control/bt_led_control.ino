@@ -1,15 +1,26 @@
+
 /*
-  Bluetooth LED Control using HC-05
+  Project: Bluetooth RGB LED Controller using HC-05
+
+  Description:
+  This project uses an Arduino and an HC-05 Bluetooth module to
+  control an RGB LED through serial Bluetooth commands. The user
+  can turn on the Red, Green, or Blue LED individually, turn all
+  LEDs off, or activate a flashing pattern. The Arduino receives
+  commands from a paired Bluetooth device and displays the current
+  LED status on the Serial Monitor.
 
   Commands:
-  R -> Red LED ON
-  G -> Green LED ON
-  B -> Blue LED ON
-  X -> All LEDs OFF
-  F -> Flash all LEDs 5 times
-*/
+  R - Red LED ON
+  G - Green LED ON
+  B - Blue LED ON
+  X - All LEDs OFF
+  F - Flash all LEDs 5 times
 
-const int RED = 8;
+  Author: Lakshay Sharma
+  Date: 17 July 2026
+*/
+author date description const int RED = 8;
 const int GREEN = 9;
 const int BLUE = 10;
 
