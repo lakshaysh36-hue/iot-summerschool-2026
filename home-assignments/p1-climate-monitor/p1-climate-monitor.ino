@@ -24,10 +24,32 @@ Adafruit_SSD1306 display(
 
 DHTesp dht;
 
+// ---------------- TIMING ----------------
+unsigned long lastSensorRead = 0;
+unsigned long lastCSVLog = 0;
+unsigned long lastScreenChange = 0;
+unsigned long buzzerStartTime = 0;
+
+const unsigned long SENSOR_INTERVAL = 2000;
+const unsigned long CSV_INTERVAL = 5000;
+const unsigned long SCREEN_INTERVAL = 5000;
+const unsigned long BUZZER_DURATION = 1000;
+
+// ---------------- SENSOR DATA ----------------
 float temperature = 0;
 float humidity = 0;
 
+float maxTemperature = -100;
+float minTemperature = 100;
+
 String status = "STARTING";
+
+int currentScreen = 0;
+bool buzzerActive = false;
+
+// =================================================
+// SETUP
+// =================================================
 
 void setup() {
 
@@ -64,87 +86,192 @@ void setup() {
   display.display();
 
   delay(2000);
+
+  Serial.println("millis,temperature,humidity,status");
 }
+
+// =================================================
+// MAIN LOOP
+// =================================================
 
 void loop() {
 
-  TempAndHumidity data = dht.getTempAndHumidity();
+  unsigned long currentMillis = millis();
 
-  temperature = data.temperature;
-  humidity = data.humidity;
+  // ---------------- SENSOR READING ----------------
 
-  if (isnan(temperature) || isnan(humidity)) {
+  if (currentMillis - lastSensorRead >= SENSOR_INTERVAL) {
 
-    Serial.println("DHT11 reading failed!");
+    lastSensorRead = currentMillis;
 
-    delay(2000);
-    return;
+    TempAndHumidity data = dht.getTempAndHumidity();
+
+    temperature = data.temperature;
+    humidity = data.humidity;
+
+    if (isnan(temperature) || isnan(humidity)) {
+
+      Serial.println("DHT11 reading failed!");
+
+      return;
+    }
+
+    // Update min/max temperature
+    if (temperature < minTemperature) {
+      minTemperature = temperature;
+    }
+
+    if (temperature > maxTemperature) {
+      maxTemperature = temperature;
+    }
+
+    // ---------------- ALERT LOGIC ----------------
+
+    if (temperature > 38 || humidity > 80) {
+
+      status = "DANGER";
+
+      digitalWrite(RED_LED, HIGH);
+      digitalWrite(GREEN_LED, LOW);
+
+      if (!buzzerActive) {
+
+        digitalWrite(BUZZER_SIGNAL, HIGH);
+
+        buzzerActive = true;
+        buzzerStartTime = currentMillis;
+      }
+    }
+
+    else if (temperature > 32 || humidity > 70) {
+
+      status = "HOT";
+
+      digitalWrite(RED_LED, LOW);
+      digitalWrite(GREEN_LED, HIGH);
+    }
+
+    else if (temperature >= 20 && temperature <= 30 &&
+             humidity >= 40 && humidity <= 70) {
+
+      status = "COMFORT";
+
+      digitalWrite(RED_LED, LOW);
+      digitalWrite(GREEN_LED, HIGH);
+    }
+
+    else {
+
+      status = "COOL";
+
+      digitalWrite(RED_LED, LOW);
+      digitalWrite(GREEN_LED, HIGH);
+    }
+
+    updateOLED();
   }
 
-  // Alert logic
-  if (temperature > 38 || humidity > 80) {
+  // ---------------- BUZZER TIMER ----------------
 
-    status = "DANGER";
+  if (buzzerActive &&
+      currentMillis - buzzerStartTime >= BUZZER_DURATION) {
 
-    digitalWrite(RED_LED, HIGH);
-    digitalWrite(GREEN_LED, LOW);
-
-    digitalWrite(BUZZER_SIGNAL, HIGH);
-    delay(1000);
     digitalWrite(BUZZER_SIGNAL, LOW);
+
+    buzzerActive = false;
   }
 
-  else if (temperature > 32 || humidity > 70) {
+  // ---------------- CSV LOGGING ----------------
 
-    status = "HOT";
+  if (currentMillis - lastCSVLog >= CSV_INTERVAL) {
 
-    digitalWrite(RED_LED, LOW);
-    digitalWrite(GREEN_LED, HIGH);
+    lastCSVLog = currentMillis;
+
+    Serial.print(millis());
+    Serial.print(",");
+
+    Serial.print(temperature, 1);
+    Serial.print(",");
+
+    Serial.print(humidity, 1);
+    Serial.print(",");
+
+    Serial.println(status);
   }
 
-  else if (temperature >= 20 && temperature <= 30 &&
-           humidity >= 40 && humidity <= 70) {
+  // ---------------- SCREEN SWITCHING ----------------
 
-    status = "COMFORT";
+  if (currentMillis - lastScreenChange >= SCREEN_INTERVAL) {
 
-    digitalWrite(RED_LED, LOW);
-    digitalWrite(GREEN_LED, HIGH);
+    lastScreenChange = currentMillis;
+
+    currentScreen++;
+
+    if (currentScreen > 1) {
+      currentScreen = 0;
+    }
+
+    updateOLED();
   }
+}
 
-  else {
+// =================================================
+// OLED DISPLAY
+// =================================================
 
-    status = "COOL";
+void updateOLED() {
 
-    digitalWrite(RED_LED, LOW);
-    digitalWrite(GREEN_LED, HIGH);
-  }
-
-  // OLED display
   display.clearDisplay();
 
   display.setTextColor(SSD1306_WHITE);
 
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println("SMART CLIMATE");
+  if (currentScreen == 0) {
 
-  display.setTextSize(2);
+    display.setTextSize(1);
 
-  display.setCursor(0, 15);
-  display.print("T:");
-  display.print(temperature, 1);
-  display.println(" C");
+    display.setCursor(0, 0);
+    display.println("SMART CLIMATE");
 
-  display.setCursor(0, 35);
-  display.print("H:");
-  display.print(humidity, 0);
-  display.println(" %");
+    display.setTextSize(2);
 
-  display.setTextSize(1);
-  display.setCursor(0, 55);
-  display.print(status);
+    display.setCursor(0, 15);
+    display.print("T:");
+    display.print(temperature, 1);
+    display.println(" C");
+
+    display.setCursor(0, 35);
+    display.print("H:");
+    display.print(humidity, 0);
+    display.println(" %");
+
+    display.setTextSize(1);
+
+    display.setCursor(0, 55);
+    display.print(status);
+  }
+
+  else {
+
+    display.setTextSize(1);
+
+    display.setCursor(0, 0);
+    display.println("TEMP STATISTICS");
+
+    display.setCursor(0, 18);
+    display.print("Current: ");
+    display.print(temperature, 1);
+    display.println(" C");
+
+    display.setCursor(0, 32);
+    display.print("Maximum: ");
+    display.print(maxTemperature, 1);
+    display.println(" C");
+
+    display.setCursor(0, 46);
+    display.print("Minimum: ");
+    display.print(minTemperature, 1);
+    display.println(" C");
+  }
 
   display.display();
-
-  delay(2000);
 }
