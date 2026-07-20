@@ -5,7 +5,7 @@ BluetoothSerial SerialBT;
 // ---------- PIN DEFINITIONS ----------
 #define RELAY1 26
 #define RELAY2 27
-#define BUZZER 25
+#define BUZZER 25 
 #define STATUS_LED 2
 
 #define BUTTON1 0
