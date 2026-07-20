@@ -39,3 +39,27 @@ The system uses an HC-SR04 ultrasonic sensor to measure distance. The Arduino pr
 
 ```text
 SAFE → CAUTION → CLOSE → DANGER
+
+
+
+
+
+
+
+              +----------------------+
+              |      HC-SR04         |
+              |  Ultrasonic Sensor   |
+              +----------+-----------+
+                         |
+                         | Distance Data
+                         v
+                  +-------------+
+                  |             |
+                  |  Arduino    |
+                  |    Uno      |
+                  |             |
+                  +-------------+
+                    |     |     |
+                    |     |     |
+                    v     v     v
+                 LEDs   Buzzer OLED
