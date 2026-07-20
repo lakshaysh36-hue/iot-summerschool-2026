@@ -8,7 +8,7 @@
 **Mode:** Individual / Solo
 
 ---
-
+I HAVE USED GREEN LED INSTEAD OF YELLOW HERE AS I DIDNT HAVE IT AT THE TIME
 ## 1. Project Overview
 
 The Ultrasonic Parking Assistant is a distance-based parking sensor that simulates the parking assistance systems used in modern vehicles.
