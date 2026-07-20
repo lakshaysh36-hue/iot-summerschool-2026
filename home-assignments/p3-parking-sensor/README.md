@@ -63,3 +63,94 @@ SAFE → CAUTION → CLOSE → DANGER
                     |     |     |
                     v     v     v
                  LEDs   Buzzer OLED
+
+
+
+The **HC-SR04 uses the basic physics formula**:
+
+[
+\text{Distance} = \text{Speed} \times \text{Time}
+]
+
+## How it works
+
+The HC-SR04 sends an ultrasonic sound wave toward an object.
+
+```text
+HC-SR04 ───────► Object
+          ◄───────
+          Echo returns
+```
+
+The sensor measures the time taken for the sound wave to:
+
+1. Travel from the sensor to the object
+2. Reflect from the object
+3. Return to the sensor
+
+The Arduino measures this time using:
+
+```cpp
+long duration = pulseIn(ECHO_PIN, HIGH);
+```
+
+---
+
+## Speed of sound
+
+The speed of sound in air is approximately:
+
+[
+343 \text{ m/s}
+]
+
+In the units used by the Arduino:
+
+[
+0.0343 \text{ cm/µs}
+]
+
+So the formula becomes:
+
+[
+\text{Total distance} = \text{Time} \times 0.0343
+]
+
+However, the measured distance is **twice the actual distance** because the sound travels both ways:
+
+```text
+Sensor → Object = actual distance
+Object → Sensor = actual distance
+```
+
+Therefore:
+
+[
+\boxed{\text{Distance} = \frac{\text{Time} \times 0.0343}{2}}
+]
+
+In your Arduino code:
+
+```cpp
+float distance = duration * 0.034 / 2;
+```
+
+---
+
+### Example
+
+Suppose the HC-SR04 measures an echo duration of **1000 µs**:
+
+[
+\text{Distance} =
+\frac{1000 \times 0.0343}{2}
+]
+
+[
+= 17.15 \text{ cm}
+]
+
+So the object is approximately **17.15 cm away**.
+
+
+**Short explanation for your README:** The HC-SR04 measures the time taken by an ultrasonic pulse to travel to an object and return as an echo. Using the speed of sound in air (approximately 0.034 cm/µs), the Arduino calculates the total 
