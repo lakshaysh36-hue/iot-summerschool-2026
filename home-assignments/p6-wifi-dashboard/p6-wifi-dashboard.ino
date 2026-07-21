@@ -1,38 +1,35 @@
-
 #include <WiFi.h>
 #include <WebServer.h>
-
-#include <DHT.h>
 #include <Wire.h>
-#include <Adafruit_BMP280.h>
+#include <DHT.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Adafruit_BMP280.h>
 
-// =========================
-// Wi-Fi credentials
-// =========================
-
+// ================= WIFI =================
 const char* ssid = "wifi name";
 const char* password = "wifi password";
 
-// =========================
-// Pin definitions
-// =========================
+// ================= DHT11 =================
+#define DHTPIN 4
+#define DHTTYPE DHT11
 
-#define DHT_PIN 4
-#define DHT_TYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
 
-#define LDR_DO_PIN 35
+// ================= BMP280 =================
+Adafruit_BMP280 bmp;
 
-#define SDA_PIN 21
-#define SCL_PIN 22
+// ================= LDR =================
+#define LDR_PIN 34
 
-// =========================
-// OLED
-// =========================
+// Change these after calibration if necessary
+int LDR_DARK = 0;
+int LDR_BRIGHT = 4095;
 
+// ================= OLED =================
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
+
 #define OLED_RESET -1
 #define OLED_ADDRESS 0x3C
 
@@ -43,415 +40,470 @@ Adafruit_SSD1306 display(
   OLED_RESET
 );
 
-// =========================
-// Sensors
-// =========================
-
-DHT dht(DHT_PIN, DHT_TYPE);
-Adafruit_BMP280 bmp;
-
-// =========================
-// Web server
-// =========================
-
+// ================= WEB SERVER =================
 WebServer server(80);
 
-// =========================
-// Sensor variables
-// =========================
-
+// ================= SENSOR VARIABLES =================
 float temperature = 0;
 float humidity = 0;
 float pressure = 0;
 float altitude = 0;
 
-bool isBright = false;
+int lightPercent = 0;
+bool bmpFound = false;
 
+// ================= TIMERS =================
 unsigned long lastSensorRead = 0;
 unsigned long lastWiFiCheck = 0;
 
 const unsigned long SENSOR_INTERVAL = 5000;
-const unsigned long WIFI_RETRY_INTERVAL = 30000;
+const unsigned long WIFI_INTERVAL = 30000;
 
-// =========================
-// Read sensors
-// =========================
-
-void readSensors() {
-
-  temperature = dht.readTemperature();
-  humidity = dht.readHumidity();
-
-  pressure = bmp.readPressure() / 100.0F;
-
-  altitude = bmp.readAltitude(1013.25);
-
-  // 3-pin LDR module
-  // DO gives a digital light/dark signal
-  int ldrState = digitalRead(LDR_DO_PIN);
-
-  // Most modules give LOW in bright conditions
-  if (ldrState == LOW) {
-    isBright = true;
-  } else {
-    isBright = false;
-  }
-
-  Serial.println();
-  Serial.println("========== WEATHER DATA ==========");
-
-  if (isnan(temperature) || isnan(humidity)) {
-
-    Serial.println("DHT11 reading failed");
-
-  } else {
-
-    Serial.print("Temperature: ");
-    Serial.print(temperature);
-    Serial.println(" C");
-
-    Serial.print("Humidity: ");
-    Serial.print(humidity);
-    Serial.println(" %");
-  }
-
-  Serial.print("Pressure: ");
-  Serial.print(pressure);
-  Serial.println(" hPa");
-
-  Serial.print("Altitude: ");
-  Serial.print(altitude);
-  Serial.println(" m");
-
-  Serial.print("Light: ");
-  Serial.println(isBright ? "BRIGHT" : "DARK");
-
-  Serial.println("==================================");
-}
-
-// =========================
-// OLED display
-// =========================
-
-void updateOLED() {
-
-  display.clearDisplay();
-
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-
-  display.setCursor(0, 0);
-  display.println("WiFi Weather Station");
-
-  display.setCursor(0, 12);
-  display.print("Temp: ");
-
-  if (isnan(temperature)) {
-    display.println("Error");
-  } else {
-    display.print(temperature, 1);
-    display.println(" C");
-  }
-
-  display.setCursor(0, 24);
-  display.print("Humidity: ");
-
-  if (isnan(humidity)) {
-    display.println("Error");
-  } else {
-    display.print(humidity, 1);
-    display.println("%");
-  }
-
-  display.setCursor(0, 36);
-  display.print("Light: ");
-  display.println(isBright ? "BRIGHT" : "DARK");
-
-  display.setCursor(0, 48);
-  display.print("IP: ");
-  display.println(WiFi.localIP());
-
-  display.display();
-}
-
-// =========================
-// HTML dashboard
-// =========================
-
+// ================= HTML PAGE =================
 String buildHtmlPage() {
 
   String html = R"rawliteral(
+
 <!DOCTYPE html>
 <html>
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta http-equiv="refresh" content="10">
+<meta name="viewport"
+content="width=device-width, initial-scale=1">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
+<title>ESP32 Wi-Fi Weather Dashboard</title>
 
-  <title>ESP32 Weather Dashboard</title>
+<style>
 
-  <style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  background: #eaf6ff;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-      background: #eaf6ff;
-    }
+h1 {
+  color: #222;
+}
 
-    h1 {
-      color: #222;
-    }
+.container {
+  max-width: 900px;
+  margin: auto;
+}
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
+.cards {
+  display: grid;
+  grid-template-columns:
+  repeat(auto-fit, minmax(200px, 1fr));
 
-    .cards {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
+}
 
-      gap: 20px;
-      margin-top: 25px;
-    }
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
 
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
+  box-shadow:
+  0 4px 10px rgba(0,0,0,0.15);
+}
 
-    .value {
-      font-size: 28px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
+.value {
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 10px;
+}
 
-    .cool {
-      background: #dff3ff;
-    }
+.cool {
+  background: #dff3ff;
+}
 
-    .hot {
-      background: #ffe0c2;
-    }
+.hot {
+  background: #ffe0c2;
+}
 
-    .bright {
-      background: #fff6b3;
-    }
+.info {
+  margin-top: 25px;
+  font-size: 16px;
+}
 
-    .dark {
-      background: #d9d9d9;
-    }
-
-    .info {
-      margin-top: 25px;
-      font-size: 16px;
-    }
-
-  </style>
+</style>
 
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>ESP32 Wi-Fi Weather Dashboard</h1>
+<h1>ESP32 Wi-Fi Weather Dashboard</h1>
 
-    <p>Live local weather station</p>
+<p>Live Local Weather Station</p>
 
-    <div class="cards">
+<div class="cards">
 
-      <div class="card" id="temperatureCard">
-        <h2>Temperature</h2>
-        <div class="value" id="temperature">-- C</div>
-      </div>
+<div class="card" id="temperatureCard">
 
-      <div class="card">
-        <h2>Humidity</h2>
-        <div class="value" id="humidity">-- %</div>
-      </div>
+<h2>Temperature</h2>
 
-      <div class="card">
-        <h2>Pressure</h2>
-        <div class="value" id="pressure">-- hPa</div>
-      </div>
+<div class="value" id="temperature">
+-- °C
+</div>
 
-      <div class="card">
-        <h2>Altitude</h2>
-        <div class="value" id="altitude">-- m</div>
-      </div>
+</div>
 
-      <div class="card" id="lightCard">
-        <h2>Light</h2>
-        <div class="value" id="light">--</div>
-      </div>
 
-    </div>
+<div class="card">
 
-    <div class="info">
+<h2>Humidity</h2>
 
-      <p>
-        <b>Connected Wi-Fi:</b>
+<div class="value" id="humidity">
+-- %
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Pressure</h2>
+
+<div class="value" id="pressure">
+-- hPa
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Altitude</h2>
+
+<div class="value" id="altitude">
+-- m
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Light Level</h2>
+
+<div class="value" id="light">
+-- %
+</div>
+
+</div>
+
+</div>
+
+<div class="info">
+
+<p>
+<b>Wi-Fi:</b>
 )rawliteral";
 
-  html += ssid;
+  html += WiFi.SSID();
 
   html += R"rawliteral(
-      </p>
+</p>
 
-      <p>
-        <b>ESP32 IP:</b>
+<p>
+
+<b>ESP32 IP:</b>
 )rawliteral";
 
   html += WiFi.localIP().toString();
 
   html += R"rawliteral(
-      </p>
 
-    </div>
+</p>
 
-  </div>
+</div>
 
-  <script>
+</div>
 
-    function updateData() {
 
-      fetch('/data')
+<script>
 
-        .then(response => response.json())
+function updateData() {
 
-        .then(data => {
+fetch('/data')
 
-          document.getElementById("temperature")
-            .innerHTML = data.temp.toFixed(1) + " C";
+.then(response => response.json())
 
-          document.getElementById("humidity")
-            .innerHTML = data.humidity.toFixed(1) + " %";
+.then(data => {
 
-          document.getElementById("pressure")
-            .innerHTML = data.pressure.toFixed(1) + " hPa";
+document.getElementById("temperature")
+.innerHTML =
+data.temp.toFixed(1) + " °C";
 
-          document.getElementById("altitude")
-            .innerHTML = data.altitude.toFixed(1) + " m";
+document.getElementById("humidity")
+.innerHTML =
+data.humidity.toFixed(1) + " %";
 
-          document.getElementById("light")
-            .innerHTML = data.light;
+document.getElementById("pressure")
+.innerHTML =
+data.pressure.toFixed(1) + " hPa";
 
-          let tempCard =
-            document.getElementById("temperatureCard");
+document.getElementById("altitude")
+.innerHTML =
+data.altitude.toFixed(1) + " m";
 
-          if (data.temp >= 30) {
-            tempCard.className = "card hot";
-          } else {
-            tempCard.className = "card cool";
-          }
+document.getElementById("light")
+.innerHTML =
+data.light + " %";
 
-          let lightCard =
-            document.getElementById("lightCard");
 
-          if (data.light == "BRIGHT") {
-            lightCard.className = "card bright";
-          } else {
-            lightCard.className = "card dark";
-          }
+let temperatureCard =
+document.getElementById("temperatureCard");
 
-        })
 
-        .catch(error => {
-          console.log("Error:", error);
-        });
+if (data.temp >= 30) {
 
-    }
+temperatureCard.className =
+"card hot";
 
-    updateData();
+}
 
-    setInterval(updateData, 5000);
+else {
 
-  </script>
+temperatureCard.className =
+"card cool";
+
+}
+
+});
+
+}
+
+updateData();
+
+setInterval(updateData, 5000);
+
+</script>
 
 </body>
 
 </html>
+
 )rawliteral";
 
   return html;
 }
 
-// =========================
-// JSON endpoint
-// =========================
-
+// ================= JSON DATA =================
 String buildJson() {
 
   String json = "{";
 
-  json += "\"temp\":" + String(temperature, 1) + ",";
-  json += "\"humidity\":" + String(humidity, 1) + ",";
-  json += "\"pressure\":" + String(pressure, 1) + ",";
-  json += "\"altitude\":" + String(altitude, 1) + ",";
-  json += "\"light\":\"";
+  json += "\"temp\":" + String(temperature, 2) + ",";
+  json += "\"humidity\":" + String(humidity, 2) + ",";
+  json += "\"pressure\":" + String(pressure, 2) + ",";
+  json += "\"altitude\":" + String(altitude, 2) + ",";
+  json += "\"light\":" + String(lightPercent);
 
-  json += isBright ? "BRIGHT" : "DARK";
-
-  json += "\"}";
+  json += "}";
 
   return json;
 }
 
-// =========================
-// Wi-Fi connection
-// =========================
+// ================= OLED DISPLAY =================
+void updateOLED() {
 
-void connectWiFi() {
+  display.clearDisplay();
 
-  Serial.print("Connecting to Wi-Fi");
+  display.setTextSize(1);
 
-  WiFi.begin(ssid, password);
+  display.setTextColor(SSD1306_WHITE);
 
-  int attempts = 0;
+  display.setCursor(0, 0);
 
-  while (WiFi.status() != WL_CONNECTED && attempts < 30) {
+  display.println("WEATHER STATION");
 
-    delay(500);
+  display.println();
 
-    Serial.print(".");
+  display.print("Temp: ");
+  display.print(temperature, 1);
+  display.println(" C");
 
-    attempts++;
+  display.print("Hum:  ");
+  display.print(humidity, 1);
+  display.println(" %");
+
+  display.print("Light: ");
+  display.print(lightPercent);
+  display.println(" %");
+
+  display.println();
+
+  display.print("IP:");
+
+  display.println(WiFi.localIP());
+
+  display.display();
+}
+
+// ================= READ SENSORS =================
+void readSensors() {
+
+  // DHT11
+  float newTemp = dht.readTemperature();
+
+  float newHumidity = dht.readHumidity();
+
+  if (!isnan(newTemp)) {
+    temperature = newTemp;
   }
 
+  if (!isnan(newHumidity)) {
+    humidity = newHumidity;
+  }
+
+
+  // BMP280
+  if (bmpFound) {
+
+    pressure =
+      bmp.readPressure() / 100.0;
+
+    altitude =
+      bmp.readAltitude(1013.25);
+  }
+
+
+  // LDR
+  int rawLight =
+    analogRead(LDR_PIN);
+
+
+  lightPercent =
+    map(
+      rawLight,
+      LDR_DARK,
+      LDR_BRIGHT,
+      0,
+      100
+    );
+
+
+  lightPercent =
+    constrain(
+      lightPercent,
+      0,
+      100
+    );
+
+
+  // Serial Monitor
   Serial.println();
 
-  if (WiFi.status() == WL_CONNECTED) {
+  Serial.println(
+    "========== WEATHER DATA =========="
+  );
 
-    Serial.println("Wi-Fi connected!");
+  Serial.print("Temperature: ");
 
-    Serial.print("SSID: ");
-    Serial.println(ssid);
+  Serial.print(temperature);
 
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
+  Serial.println(" C");
 
-  } else {
 
-    Serial.println("Wi-Fi connection failed.");
+  Serial.print("Humidity: ");
 
+  Serial.print(humidity);
+
+  Serial.println(" %");
+
+
+  Serial.print("Pressure: ");
+
+  Serial.print(pressure);
+
+  Serial.println(" hPa");
+
+
+  Serial.print("Altitude: ");
+
+  Serial.print(altitude);
+
+  Serial.println(" m");
+
+
+  Serial.print("LDR Raw Value: ");
+
+  Serial.println(rawLight);
+
+
+  Serial.print("Light: ");
+
+  Serial.print(lightPercent);
+
+  Serial.println(" %");
+
+
+  Serial.println(
+    "=================================="
+  );
+
+
+  updateOLED();
+}
+
+// ================= WIFI RECONNECTION =================
+void checkWiFi() {
+
+  if (WiFi.status() != WL_CONNECTED) {
+
+    Serial.println(
+      "Wi-Fi disconnected. Reconnecting..."
+    );
+
+    WiFi.disconnect();
+
+    WiFi.begin(
+      ssid,
+      password
+    );
+
+    unsigned long startTime =
+      millis();
+
+    while (
+      WiFi.status() != WL_CONNECTED &&
+      millis() - startTime < 10000
+    ) {
+
+      delay(500);
+
+      Serial.print(".");
+    }
+
+    Serial.println();
+
+    if (WiFi.status() == WL_CONNECTED) {
+
+      Serial.println(
+        "Wi-Fi reconnected!"
+      );
+
+      Serial.print(
+        "IP Address: "
+      );
+
+      Serial.println(
+        WiFi.localIP()
+      );
+    }
   }
 }
 
-// =========================
-// Setup
-// =========================
-
+// ================= SETUP =================
 void setup() {
 
   Serial.begin(115200);
@@ -459,145 +511,196 @@ void setup() {
   delay(1000);
 
   Serial.println();
-  Serial.println("ESP32 Wi-Fi Weather Dashboard");
 
-  pinMode(LDR_DO_PIN, INPUT);
+  Serial.println(
+    "ESP32 Wi-Fi Weather Dashboard"
+  );
 
-  Wire.begin(SDA_PIN, SCL_PIN);
 
+  // DHT
   dht.begin();
 
-  // Initialize OLED
 
-  if (!display.begin(
-        SSD1306_SWITCHCAPVCC,
-        OLED_ADDRESS)) {
+  // I2C
+  Wire.begin(
+    21,
+    22
+  );
 
-    Serial.println("OLED not found!");
 
-  } else {
+  // OLED
+  if (
+    !display.begin(
+      SSD1306_SWITCHCAPVCC,
+      OLED_ADDRESS
+    )
+  ) {
+
+    Serial.println(
+      "OLED not found!"
+    );
+  }
+
+  else {
 
     display.clearDisplay();
 
     display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
+
+    display.setTextColor(
+      SSD1306_WHITE
+    );
 
     display.setCursor(0, 0);
-    display.println("Starting Weather");
+
+    display.println(
+      "Starting..."
+    );
 
     display.display();
-
   }
 
-  // Initialize BMP280
 
-  bool bmpStarted = false;
+  // BMP280
+  if (
+    bmp.begin(0x76)
+  ) {
 
-  if (bmp.begin(0x76)) {
+    bmpFound = true;
 
-    bmpStarted = true;
-
-  } else if (bmp.begin(0x77)) {
-
-    bmpStarted = true;
-
-  }
-
-  if (!bmpStarted) {
-
-    Serial.println("BMP280 not found!");
-
-  } else {
-
-    Serial.println("BMP280 detected.");
-
-  }
-
-  connectWiFi();
-
-  readSensors();
-
-  updateOLED();
-
-  // Main webpage
-
-  server.on("/", []() {
-
-    server.send(
-      200,
-      "text/html",
-      buildHtmlPage()
+    Serial.println(
+      "BMP280 found at 0x76"
     );
+  }
 
-  });
+  else if (
+    bmp.begin(0x77)
+  ) {
 
-  // JSON data endpoint
+    bmpFound = true;
 
-  server.on("/data", []() {
-
-    server.send(
-      200,
-      "application/json",
-      buildJson()
+    Serial.println(
+      "BMP280 found at 0x77"
     );
+  }
 
-  });
+  else {
+
+    Serial.println(
+      "BMP280 not found!"
+    );
+  }
+
+
+  // Wi-Fi
+  WiFi.begin(
+    ssid,
+    password
+  );
+
+  Serial.print(
+    "Connecting to Wi-Fi"
+  );
+
+  while (
+    WiFi.status() != WL_CONNECTED
+  ) {
+
+    delay(500);
+
+    Serial.print(".");
+  }
+
+  Serial.println();
+
+  Serial.println(
+    "Wi-Fi connected!"
+  );
+
+  Serial.print(
+    "SSID: "
+  );
+
+  Serial.println(
+    WiFi.SSID()
+  );
+
+  Serial.print(
+    "IP Address: "
+  );
+
+  Serial.println(
+    WiFi.localIP()
+  );
+
+
+  // Webpage
+  server.on(
+    "/",
+    HTTP_GET,
+    []() {
+
+      server.send(
+        200,
+        "text/html",
+        buildHtmlPage()
+      );
+    }
+  );
+
+
+  // JSON endpoint
+  server.on(
+    "/data",
+    HTTP_GET,
+    []() {
+
+      server.send(
+        200,
+        "application/json",
+        buildJson()
+      );
+    }
+  );
+
 
   server.begin();
 
-  Serial.println("Web server started!");
+  Serial.println(
+    "Web server started!"
+  );
 
-  if (WiFi.status() == WL_CONNECTED) {
 
-    Serial.print("Open this IP in your browser: ");
-
-    Serial.println(WiFi.localIP());
-
-  }
-
+  // First sensor reading
+  readSensors();
 }
 
-// =========================
-// Main loop
-// =========================
-
+// ================= LOOP =================
 void loop() {
 
-  // Required for WebServer
   server.handleClient();
 
-  unsigned long currentMillis = millis();
 
-  // Read sensors every 5 seconds
-
-  if (currentMillis - lastSensorRead >= SENSOR_INTERVAL) {
-
-    lastSensorRead = currentMillis;
+  if (
+    millis() - lastSensorRead >=
+    SENSOR_INTERVAL
+  ) {
 
     readSensors();
 
-    updateOLED();
-
+    lastSensorRead =
+      millis();
   }
 
-  // Check Wi-Fi every 30 seconds
 
-  if (currentMillis - lastWiFiCheck >= WIFI_RETRY_INTERVAL) {
+  if (
+    millis() - lastWiFiCheck >=
+    WIFI_INTERVAL
+  ) {
 
-    lastWiFiCheck = currentMillis;
+    checkWiFi();
 
-    if (WiFi.status() != WL_CONNECTED) {
-
-      Serial.println("Wi-Fi disconnected.");
-
-      Serial.println("Trying to reconnect...");
-
-      WiFi.disconnect();
-
-      WiFi.begin(ssid, password);
-
-    }
-
+    lastWiFiCheck =
+      millis();
   }
-
 }
