@@ -5,7 +5,7 @@
 **Difficulty:** Beginner  
 **Time Required:** 1–2 Hours  
 **Marks:** 10  
-**Mode:** Solo
+solo mode
 
 ---
 DRIVE LINK OF DEMO-https://drive.google.com/file/d/1x3xcZ2vO_ID5fZ-Glrjziohc9aUIh5kz/view?usp=drivesdk
