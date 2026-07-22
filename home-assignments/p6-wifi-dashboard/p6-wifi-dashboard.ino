@@ -22,7 +22,9 @@ Adafruit_BMP280 bmp;
 // ================= LDR =================
 #define LDR_PIN 34
 
-// Change these after calibration if necessary
+
+// Calibrated limits used to convert the LDR reading into a percentage.
+// Update these values after measuring the actual dark and bright readings.
 int LDR_DARK = 0;
 int LDR_BRIGHT = 4095;
 
