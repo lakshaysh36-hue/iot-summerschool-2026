@@ -1,4 +1,4 @@
-# Project 9: Precision Motor Positioner
+# Project 9: Precision Motor Positioner project
 
 A precision motor position-control system developed for the IoT Summer School Project 9. The system allows a user to set a target angle using a potentiometer and uses encoder feedback to track the actual position of a DC motor.
 
