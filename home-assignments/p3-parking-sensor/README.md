@@ -134,6 +134,129 @@ Example:
 
 Distance: 8.5 cm | Zone: DANGER
 
+## Physics Formula Used for Distance Calculation
+
+The HC-SR04 ultrasonic sensor calculates distance using the **time-of-flight principle**.
+
+The sensor sends an ultrasonic pulse and measures the time taken for the echo to return after reflecting from an object.
+
+
+
+The fundamental relationship is:
+
+
+Distance = Speed × Time
+
+
+However, the ultrasonic pulse travels:
+
+
+Sensor → Object → Sensor
+
+Therefore, the measured time represents the **round-trip time**. The actual one-way distance is calculated as:
+
+Distance = (Speed of Sound × Time) / 2
+
+
+### Formula Used in the Code
+
+The code uses:
+
+
+float distance = duration * 0.034 / 2;
+
+
+Where
+
+* `duration` = echo travel time in microseconds
+* `0.034` = approximate speed of sound in centimeters per microsecond
+* `/ 2` = divides the round-trip distance by two to obtain the one-way distance
+
+The speed of sound is approximately:
+
+
+343 m/s
+
+
+This is equivalent to approximately:
+
+
+0.0343 cm/µs
+
+
+Therefore:
+
+
+Distance (cm) = duration (µs) × 0.0343 / 2
+
+
+### Example Calculation
+
+If the HC-SR04 measures an echo time of:
+
+
+1000 µs
+
+
+Then:
+
+Distance = (1000 × 0.034) / 2
+Distance = 17 cm
+
+
+Therefore, the object is approximately **17 cm** away from the sensor.
+
+### Why the Distance Is Divided by 2
+
+The ultrasonic pulse travels twice the distance:
+
+
+Sensor ─────────► Object
+       Distance
+
+Sensor ◄───────── Object
+       Distance
+
+
+The measured time includes both journeys:
+
+
+Total distance = 2 × Actual distance
+
+
+Therefore:
+
+
+Actual distance = Total distance / 2
+
+
+### Averaging Multiple Readings
+
+The project takes five distance measurements and calculates their average:
+
+
+float getAverageDistance() {
+
+  float total = 0;
+
+  for (int i = 0; i < 5; i++) {
+    total += measureDistance();
+    delay(10);
+  }
+
+  return total / 5.0;
+}
+
+
+Mathematically:
+
+
+Average Distance =
+(D₁ + D₂ + D₃ + D₄ + D₅) / 5
+
+Averaging helps reduce small fluctuations caused by sensor noise and reflections, resulting in a more stable parking distance measurement.
+
+
 
 ## Project Working
 
