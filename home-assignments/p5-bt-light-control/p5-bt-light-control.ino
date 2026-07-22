@@ -7,7 +7,8 @@ BluetoothSerial SerialBT;
 #define RELAY2 27
 #define BUZZER 25 
 #define STATUS_LED 2
-
+// Relay control logic is configured here so the output behavior
+// can be changed easily if the relay module uses opposite logic.
 #define BUTTON1 0
 #define BUTTON2 35
 
