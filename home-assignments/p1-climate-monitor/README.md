@@ -5,6 +5,48 @@
 This project is a smart room climate monitoring system built using an ESP32 and DHT11 temperature and humidity sensor.
 
 The system continuously measures temperature and humidity, displays the readings on an OLED display, and provides visual and audio alerts when the room becomes too hot or humid.
+Library Versions
+
+The project uses the following Arduino libraries:
+
+Library	Recommended Version
+DHT sensor library	1.4.6
+Adafruit Unified Sensor	1.1.15
+Adafruit GFX Library	1.12.1
+Adafruit SSD1306	2.5.15
+ESP32 Board Package
+ESP32 by Espressif Systems
+
+Use a current stable ESP32 board package compatible with the installed libraries.
+
+
+Wiring Diagram (Text)
+                    ┌─────────────────────┐
+                    │       ESP32         │
+                    │                     │
+        DHT11       │                     │
+    ┌───────────┐   │                     │
+    │ VCC ───────────► 3.3V              │
+    │ GND ───────────► GND               │
+    │ DATA ──────────► GPIO 4            │
+    └───────────┘   │                     │
+                    │                     │
+                    │                     │
+        OLED        │                     │
+    ┌───────────┐   │                     │
+    │ VCC ───────────► 3.3V              │
+    │ GND ───────────► GND               │
+    │ SDA ───────────► GPIO 21           │
+    │ SCL ───────────► GPIO 22           │
+    └───────────┘   │                     │
+                    │                     │
+                    │                     │
+        Buzzer      │                     │
+    ┌───────────┐   │                     │
+    │ (+) ──────────► GPIO 25            │
+    │ (-) ──────────► GND                │
+    └───────────┘   │                     │
+                    └─────────────────────┘
 
 ## Components Used
 
