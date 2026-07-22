@@ -242,7 +242,7 @@ void loop() {
     display.display();
   }
 
-  // ---------------- SERIAL MONITOR ----------------
+  // ---------------- SERIAL MONITOR -----------------
 
   if (millis() - lastSerialTime >= SERIAL_INTERVAL) {
 
