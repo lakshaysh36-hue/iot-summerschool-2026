@@ -105,7 +105,7 @@ void setup() {
 void loop() {
 
   // -----------------------------------------------
-  // 1. READ POTENTIOMETER
+  // 1. READ POTENTIOMETER and helps in displaying angle and direction
   // -----------------------------------------------
 
   int potValue = analogRead(POT_PIN);
