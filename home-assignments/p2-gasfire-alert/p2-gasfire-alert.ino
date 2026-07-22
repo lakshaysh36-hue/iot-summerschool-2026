@@ -54,7 +54,7 @@ void setup() {
 }
 
 // ---------- LOOP ----------
-
+// Active-low flame sensor: LOW means flame detected
 void loop() {
 
   // Read MQ-2 gas sensor
