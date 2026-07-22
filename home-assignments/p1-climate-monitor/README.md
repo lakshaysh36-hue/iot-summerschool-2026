@@ -118,8 +118,8 @@ When humidity exceeds 80%, the red LED and buzzer are activated.
 ## Demo Video
 
 Google Drive Demo Video:
+https://drive.google.com/file/d/14s27s8PyV1y9gnSSWWv24Ov6Avh3aKD1/view?usp=drivesdk
 
-[PASTE YOUR GOOGLE DRIVE LINK HERE]
 
 ## Project Status
 
