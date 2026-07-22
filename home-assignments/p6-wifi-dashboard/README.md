@@ -1,7 +1,7 @@
 # Project 6: Wi-Fi Weather Dashboard
 DRIVE LINK-https://drive.google.com/file/d/1_3uDe-TcyDTDJjWvdOtNRlx7OBlEeILI/view?usp=sharing
 ## Components Used
-
+//done on both mobile and laptop
 * ESP32 Development Board
 * DHT11 Temperature and Humidity Sensor
 * BMP280 Barometric Pressure Sensor
