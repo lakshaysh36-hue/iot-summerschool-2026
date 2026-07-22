@@ -135,6 +135,261 @@ Light: DARK
 
 depending on the surrounding light level.
 
+## HTML Page Source Code
+
+The ESP32 generates and serves the dashboard HTML page directly from the microcontroller using the `buildHtmlPage()` function.
+
+The main HTML page structure is:
+
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>ESP32 Wi-Fi Weather Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background: #eaf6ff;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns:
+      repeat(auto-fit, minmax(200px, 1fr));
+
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+
+      box-shadow:
+      0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>ESP32 Wi-Fi Weather Dashboard</h1>
+
+    <p>Live Local Weather Station</p>
+
+    <div class="cards">
+
+      <div class="card">
+        <h2>Temperature</h2>
+        <div class="value" id="temperature">
+          -- °C
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Humidity</h2>
+        <div class="value" id="humidity">
+          -- %
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Pressure</h2>
+        <div class="value" id="pressure">
+          -- hPa
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Altitude</h2>
+        <div class="value" id="altitude">
+          -- m
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Light Level</h2>
+        <div class="value" id="light">
+          -- %
+        </div>
+      </div>
+
+    </div>
+
+    <p>
+      <b>Wi-Fi:</b>
+      ESP32 Connected Network
+    </p>
+
+    <p>
+      <b>ESP32 IP:</b>
+      192.168.x.x
+    </p>
+
+  </div>
+
+  <script>
+
+    function updateData() {
+
+      fetch('/data')
+
+      .then(response => response.json())
+
+      .then(data => {
+
+        document.getElementById("temperature")
+          .innerHTML =
+          data.temp.toFixed(1) + " °C";
+
+        document.getElementById("humidity")
+          .innerHTML =
+          data.humidity.toFixed(1) + " %";
+
+        document.getElementById("pressure")
+          .innerHTML =
+          data.pressure.toFixed(1) + " hPa";
+
+        document.getElementById("altitude")
+          .innerHTML =
+          data.altitude.toFixed(1) + " m";
+
+        document.getElementById("light")
+          .innerHTML =
+          data.light + " %";
+
+      });
+
+    }
+
+    updateData();
+
+    setInterval(updateData, 5000);
+
+  </script>
+
+</body>
+
+</html>
+```
+
+The ESP32 sends this page when the root URL `/` is requested:
+
+```cpp
+server.on(
+  "/",
+  HTTP_GET,
+  []() {
+    server.send(
+      200,
+      "text/html",
+      buildHtmlPage()
+    );
+  }
+);
+```
+
+Sensor data is provided through the `/data` endpoint in JSON format:
+
+```json
+{
+  "temp": 29.70,
+  "humidity": 83.60,
+  "pressure": 1206.35,
+  "altitude": 415.59,
+  "light": 75
+}
+```
+
+The JavaScript fetches this endpoint every five seconds to update the dashboard without requiring a full page reload.
+
+## Setup Instructions
+
+1. Connect the ESP32 and all sensors according to the wiring diagram.
+2. Install the required Arduino libraries:
+
+   * DHT sensor library
+   * Adafruit Unified Sensor
+   * Adafruit BMP280 Library
+   * Adafruit GFX Library
+   * Adafruit SSD1306
+3. Open the project code in Arduino IDE.
+4. Replace the Wi-Fi credentials:
+
+```cpp
+const char* ssid = "wifi name";
+const char* password = "wifi password";
+```
+
+with your actual Wi-Fi network details.
+
+5. Select the correct ESP32 board in Arduino IDE.
+6. Select the correct COM port.
+7. Upload the program to the ESP32.
+8. Open the Serial Monitor at **115200 baud**.
+9. Wait for the ESP32 to connect to Wi-Fi.
+10. Copy the IP address printed in the Serial Monitor.
+11. Open the IP address in a browser connected to the same Wi-Fi network.
+
+## Local IP Address Format
+
+The ESP32 receives a local IP address from the Wi-Fi router using DHCP.
+
+The address normally follows this format:
+
+```text
+192.168.x.x
+```
+
+Example:
+
+```text
+192.168.1.105
+```
+
+The exact IP address depends on the local Wi-Fi network and may be different each time the ESP32 reconnects.
+
+The Serial Monitor displays the address:
+
+```text
+Wi-Fi connected!
+IP Address: 192.168.1.105
+Web server started!
+```
+
+To access the dashboard, enter the IP address in the browser:
+
+```text
+http://192.168.1.105
+```
+
+The computer or smartphone and the ESP32 must be connected to the **same local Wi-Fi network** for the dashboard to be accessible.
+
+
 ## Project Working
 
 The Wi-Fi Weather Dashboard combines multiple sensors with the ESP32's Wi-Fi capability. The DHT11 measures temperature and humidity, the BMP280 measures atmospheric pressure and estimates altitude, and the LDR detects the surrounding light level. The ESP32 processes the sensor readings and hosts a web dashboard that allows the data to be monitored remotely from a browser on the same Wi-Fi network.
