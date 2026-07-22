@@ -8,7 +8,7 @@
 solo mode
 
 ---
-DRIVE LINK OF DEMO-https://drive.google.com/file/d/1x3xcZ2vO_ID5fZ-Glrjziohc9aUIh5kz/view?usp=drivesdk
+DRIVE LINK OF DEMO-https://drive.google.com/file/d/1v0zi7pcU8EpJnnlwp0jCWHvx_erzAeIS/view?usp=drivesdk
 
 ## 1. Project Overview
 
