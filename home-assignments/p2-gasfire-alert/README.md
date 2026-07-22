@@ -68,7 +68,7 @@ The system can detect:
 
 # 4. System Block Diagram
 
-```text
+
              MQ-2 Gas Sensor
                     |
                     | Analog Signal
@@ -191,4 +191,47 @@ Buzzer: ON
 
 
 The system provides an emergency warning through the buzzer.
+
+
+
+### MQ-2 Warm-Up Requirement
+
+The MQ-2 gas sensor requires a warm-up period before its readings become stable and reliable.
+
+After powering on the system:
+
+* Allow the MQ-2 sensor to warm up for approximately **1–2 minutes** before testing.
+* During the warm-up period, the sensor readings may fluctuate.
+* The initial readings should not be treated as accurate gas measurements.
+
+The code displays the following message during startup:
+
+
+MQ-2 warming up...
+Allow 1-2 minutes for stable readings.
+
+
+This warm-up period allows the sensor's internal heating element and sensing material to reach a stable operating condition.
+
+### Why the Flame Sensor Is Active-Low
+
+The flame sensor used in this project provides a digital output that is **active-low**.
+
+This means:
+
+
+Digital Output = HIGH → No flame detected
+Digital Output = LOW  → Flame detected
+
+
+The code checks the sensor using:
+
+
+bool flameDetected = (digitalRead(FLAME_DIGITAL_PIN) == LOW);
+
+
+The flame sensor module typically uses an onboard comparator circuit. When infrared radiation from a flame crosses the detection threshold, the comparator changes the digital output state from HIGH to LOW. Therefore, the program treats a LOW signal as a detected flame.
+
+This active-low behavior is important when interpreting the sensor output. Reversing the logic would cause the system to incorrectly report a flame when no flame is present and miss an actual flame when one is detected.
+
 
