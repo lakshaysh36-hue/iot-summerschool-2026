@@ -158,6 +158,7 @@ void loop() {
     } else {
       Serial.print("NONE");
     }
+    //for status
 
     Serial.print(" | STATUS: ");
 
