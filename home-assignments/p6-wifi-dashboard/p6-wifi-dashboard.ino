@@ -350,6 +350,7 @@ void updateOLED() {
 }
 
 // ================= READ SENSORS =================
+// Read all connected sensors and update the OLED and Serial Monitor
 void readSensors() {
 
   // DHT11
