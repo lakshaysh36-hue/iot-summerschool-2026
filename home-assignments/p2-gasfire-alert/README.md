@@ -93,3 +93,101 @@ The system can detect:
                     |
                     v
                  Buzzer
+
+
+
+
+# Gas & Fire Safety Alert System
+
+## Wiring Summary
+
+### MQ-2 Gas Sensor → Arduino/ESP32
+
+| MQ-2 Pin | Microcontroller  |
+| -------- | ---------------- |
+| VCC      | 5V               |
+| GND      | GND              |
+| AO       | Analog input pin |
+
+### Flame Sensor → Microcontroller
+
+| Flame Sensor Pin | Microcontroller   |
+| ---------------- | ----------------- |
+| VCC              | 5V                |
+| GND              | GND               |
+| DO               | Digital input pin |
+
+### Buzzer → Microcontroller
+
+| Buzzer Pin   | Microcontroller    |
+| ------------ | ------------------ |
+| Positive (+) | Digital output pin |
+| Negative (-) | GND                |
+
+> The exact GPIO/analog pin numbers should match the pin definitions in the submitted code.
+
+## How to Run
+
+1. Connect the MQ-2 gas sensor, flame sensor, and buzzer according to the wiring table.
+2. Connect the microcontroller to the computer using USB.
+3. Open the project code in Arduino IDE.
+4. Select the correct board and COM port.
+5. Upload the code.
+6. Open the Serial Monitor using the baud rate specified in the code.
+7. Allow the MQ-2 sensor to warm up before testing.
+8. Observe the gas and flame readings in the Serial Monitor.
+9. Introduce a safe test condition near the sensors to verify the alert system.
+10. When gas or flame is detected above the configured threshold, the buzzer activates.
+
+## Expected Output
+
+### Normal Condition
+
+The Serial Monitor displays readings indicating that no dangerous gas concentration or flame has been detected.
+
+
+Gas: SAFE
+Flame: SAFE
+System Status: NORMAL
+Buzzer: OFF
+
+
+### Gas Detection
+
+When the MQ-2 detects gas above the configured threshold:
+
+
+Gas: DANGER
+Flame: SAFE
+System Status: GAS ALERT
+Buzzer: ON
+
+
+The buzzer activates to provide an audible warning.
+
+### Fire/Flame Detection
+
+When the flame sensor detects a flame:
+
+
+Gas: SAFE
+Flame: DETECTED
+System Status: FIRE ALERT
+Buzzer: ON
+
+
+The buzzer activates immediately to warn of a possible fire.
+
+### Gas and Flame Detected
+
+If both dangerous conditions are detected:
+
+
+Gas: DANGER
+Flame: DETECTED
+System Status: CRITICAL ALERT
+Buzzer: ON
+
+
+The system provides an emergency warning through the buzzer.
+
