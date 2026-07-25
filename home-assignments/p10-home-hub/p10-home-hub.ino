@@ -63,8 +63,8 @@ Adafruit_SSD1306 display(
 // WIFI
 // =================================================
 
-const char* ssid = "Airtel_mada_0849";
-const char* password = "air60558";
+const char* ssid = "wifi name";
+const char* password = "wifi password";
 
 // =================================================
 // MQTT
@@ -347,7 +347,7 @@ void applyAutomationRules() {
   // =================================================
 
   if (gasPercent > 60) {
-
+//do this to 20 to check gas alert safely without damaging components
     gasAlert = true;
 
     setFan(false);
