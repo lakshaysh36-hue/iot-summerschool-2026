@@ -59,7 +59,7 @@ int readingsStored = 0;
 const unsigned long READING_INTERVAL = 30000;
 
 // Change OLED page every 5 seconds
-const unsigned long PAGE_INTERVAL = 5000;
+const unsigned long PAGE_INTERVAL = 3000;
 
 unsigned long lastReadingTime = 0;
 unsigned long lastPageChange = 0;
