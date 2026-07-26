@@ -361,52 +361,6 @@ This allows pressure readings from different elevations to be compared more mean
 A falling pressure trend may indicate changing weather conditions and can sometimes be associated with a higher possibility of rain.
 
 ---
-
-# MQTT Bonus Challenge
-
-Pressure and trend data can also be published to a public MQTT broker.
-
-### Broker
-
-```text
-broker.hivemq.com
-```
-
-### Port
-
-```text
-1883
-```
-
-### Topic
-
-```text
-iitjammu/lakshay/pressure
-```
-
-### Example MQTT Payload
-
-```json
-{
-  "pressure": 1008.42,
-  "trend": "RISING"
-}
-```
-
-The message can be published using the Mosquitto command-line tool:
-
-```cmd
-"C:\Program Files\Mosquitto\mosquitto_pub.exe" -h broker.hivemq.com -p 1883 -t "iitjammu/lakshay/pressure" -m "{\"pressure\":1008.42,\"trend\":\"RISING\"}"
-```
-
-The message can then be viewed using MQTT Explorer by subscribing to:
-
-```text
-iitjammu/lakshay/pressure
-```
-
----
-
 ## Project Demonstration
 
 The demonstration should show:
@@ -417,7 +371,7 @@ The demonstration should show:
 4. The potentiometer changing the altitude value.
 5. The red and green LED indicators.
 6. Multiple pressure readings in the Serial Monitor.
-7. MQTT messages received in MQTT Explorer for the bonus challenge.
+
 
 ---
 
