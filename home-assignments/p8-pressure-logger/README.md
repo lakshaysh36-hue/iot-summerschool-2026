@@ -379,4 +379,4 @@ The demonstration should show:
 
 This project demonstrates how a BMP280 pressure sensor can be used to monitor atmospheric conditions, calculate altitude-related pressure compensation, store historical pressure data, and identify pressure trends.
 
-The combination of the BMP280, OLED display, circular buffer, trend calculation, LED indicators, and MQTT communication forms a basic atmospheric pressure monitoring and logging system.
+The combination of the BMP280, OLED display, circular buffer, trend calculation and LED indicators forms a basic atmospheric pressure monitoring and logging system.
