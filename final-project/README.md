@@ -148,9 +148,9 @@ The ESP32 reads the voltage at the middle point and maps the ADC value to a perc
 
 ## HC-SR04 Ultrasonic Sensor
 
-The original project specification used a PIR motion sensor. However, a PIR sensor was not available for the final project implementation.
 
-Therefore, an **HC-SR04 ultrasonic sensor was used as an alternative presence-detection sensor**.
+
+.
 
 | HC-SR04 Pin | ESP32                    |
 | ----------- | ------------------------ |
