@@ -4,6 +4,7 @@ An ESP32-based IoT smart room automation system that combines environmental moni
 
 ---
 DRIVE LINK-https://drive.google.com/file/d/1GtKzSl5LkHXV6ZARSc8R-5OlHjelIvS1/view?usp=sharing
+PPT LINK-https://docs.google.com/presentation/d/1CU09-jBqDbAPOUB2ReAU--R_wWDeJ9zp/edit?usp=sharing&ouid=102831597493476341487&rtpof=true&sd=true
 ## 1. Project Overview
 This project was developed as an IoT-based smart room automation system for a hostel room, classroom, office, or similar indoor environment.
 
